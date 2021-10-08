@@ -1,0 +1,14 @@
+﻿@page "/restaurantes/{Title}"
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+<h3>@Title</h3>
+
+@code {
+    //public string url = "/api/GrabaRestaurante";
+    //public Data.RespuestaModels respuesta = new Data.RespuestaModels();
+    //protected override async Task OnInitializedAsync() => respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url);
+
+    [Parameter]
+    public string Title { get; set; }
+}

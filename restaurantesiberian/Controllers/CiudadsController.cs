@@ -68,6 +68,30 @@ namespace restaurantesiberian.Controllers
             return Ok(respuesta);
         }
 
+        [HttpGet]
+        [Route("api/Listaciudades")]
+        public async Task<IActionResult> Listaciudades()
+        {
+            RespuestaModels respuesta = new();
+       
+            try
+            {
+                using (SiberianDBContext _context = new SiberianDBContext())
+                {
+                    List<Ciudad> ciudadModels = new();
+                    ciudadModels = await _context.Ciudads.ToListAsync();
+                    respuesta.Status = 1;
+                    respuesta.DatosJson = ciudadModels;
+                }
+            }
+            catch (Exception e)
+            {
+                respuesta.Status = 0;
+                respuesta.Mensaje = e.Message;
+                // return Ok(respuesta);
+            }
+            return Ok(respuesta);
+        }
 
     }
 }
