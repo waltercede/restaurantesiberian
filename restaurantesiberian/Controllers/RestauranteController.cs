@@ -22,15 +22,27 @@ namespace restaurantesiberian.Controllers
         public async Task<IActionResult> ListaRestaurantexnom( string nombreCiudad)
         {
             RespuestaModels respuesta = new();
-            List<Restaurante> restauranteModels = new();
+           
             try
             {
                 using (SiberianDBContext _context = new SiberianDBContext())
                 {
+                    List<Restaurante> restauranteModels = new();
+                    string StoredProc = "exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurant,@numeroAforo,@telefono";
+ 
+                    List<SqlParameter> parms = new List<SqlParameter>
+                {
+    
+                new SqlParameter { ParameterName = "@tipofuncion", Value = 1 },
+                new SqlParameter { ParameterName = "@ciudad", Value = nombreCiudad },
+                new SqlParameter { ParameterName = "@idciudad", Value = 1 },
+                new SqlParameter { ParameterName = "@idrestaurante", Value = 1 },
+                new SqlParameter { ParameterName = "@nombrerestaurant", Value = "" },
+                new SqlParameter { ParameterName = "@numeroAforo", Value = 1 },
+                new SqlParameter { ParameterName = "@telefono", Value = "" },
+                };
 
-                    string StoredProc = "exec Sp_Restaurantes" +
-                     "@tipofuncion= 1, @ciudad ='gu'" ;
-                    restauranteModels = await _context.Restaurantes.FromSqlRaw(StoredProc).ToListAsync();
+                    restauranteModels = await _context.Restaurantes.FromSqlRaw<Restaurante>(StoredProc, parms.ToArray()).ToListAsync();
                     respuesta.Status = 1;
                     respuesta.DatosJson = restauranteModels;
                 }
@@ -49,16 +61,26 @@ namespace restaurantesiberian.Controllers
         public async Task<IActionResult> MotrarRestaurantexid(int id)
         {
             RespuestaModels respuesta = new();
-            List<Restaurante> restauranteModels = new();
             try
             {
                 using (SiberianDBContext _context = new SiberianDBContext())
                 {
+                    List<Restaurante> restauranteModels = new();
+                    string StoredProc = "exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurant,@numeroAforo,@telefono";
 
-                    string StoredProc = "exec Sp_Restaurantes" +
-                     "@tipofuncion ="+ 2  +"," +
-                     "@iderestaurante = " + id + "";
-                    restauranteModels = await _context.Restaurantes.FromSqlRaw(StoredProc).ToListAsync();
+                    List<SqlParameter> parms = new List<SqlParameter>
+                {
+
+                new SqlParameter { ParameterName = "@tipofuncion", Value = 2 },
+                new SqlParameter { ParameterName = "@ciudad", Value = "" },
+                new SqlParameter { ParameterName = "@idciudad", Value = id },
+                new SqlParameter { ParameterName = "@idrestaurante", Value = 1 },
+                new SqlParameter { ParameterName = "@nombrerestaurant", Value = "" },
+                new SqlParameter { ParameterName = "@numeroAforo", Value = 1 },
+                new SqlParameter { ParameterName = "@telefono", Value = "" },
+                };
+
+                    restauranteModels = await _context.Restaurantes.FromSqlRaw<Restaurante>(StoredProc, parms.ToArray()).ToListAsync(); // restauranteModels = await _context.Restaurantes.FromSqlRaw(StoredProc).ToListAsync();
                     respuesta.Status = 1;
                     respuesta.DatosJson = restauranteModels;
                 }
@@ -72,7 +94,7 @@ namespace restaurantesiberian.Controllers
             return Ok(respuesta);
         }
 
-        // POST api/<RestauranteController>
+        // POST api/<RestauranteController>4664
         [HttpPost]
         [Route("api/GrabaRestaurante")]
         public async Task<IActionResult> GrabaRestaurante(InputRestaurante  values)
@@ -82,6 +104,7 @@ namespace restaurantesiberian.Controllers
             {
                 using (SiberianDBContext _context = new())
                 {
+
 
                     var parameters = new[] {
                                                new SqlParameter("@tipofuncion", SqlDbType.Int)
@@ -97,7 +120,7 @@ namespace restaurantesiberian.Controllers
                                                new SqlParameter("@idciudad",   SqlDbType.Int)
                                             {
                                               Direction = ParameterDirection.Input,
-                                              Value = 1//values.Idciudad
+                                              Value = values.Idciudad
                                             },  
                                                new SqlParameter("@idrestaurante",   SqlDbType.Int)
                                             {
@@ -107,21 +130,31 @@ namespace restaurantesiberian.Controllers
                                                new SqlParameter("@nombrerestaurante", SqlDbType.VarChar)
                                             {
                                               Direction = ParameterDirection.Input,
-                                              Value = "cajun"//values.NombreRestaurante
+                                              Value = values.NombreRestaurante
                                             },
                                                new SqlParameter("@numeroAforo", SqlDbType.Int)
                                             {
                                               Direction = ParameterDirection.Input,
-                                              Value = 10//values.NumeroAforo
+                                              Value = values.NumeroAforo
                                             },
                                                  new SqlParameter("@telefono", SqlDbType.VarChar)
                                             {
                                               Direction = ParameterDirection.Input,
-                                              Value ="0951362110" //values.Telefono
+                                              Value =values.Telefono
                                             }
                                             };
-                    await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes  @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
-                    respuesta.Status = 1;
+
+                    if (values.Telefono.Length == 10)
+                    {
+                        await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes  @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
+                        respuesta.Status = 1;
+                    }
+                    else
+                    {
+                        respuesta.Status = 0;
+                        respuesta.Mensaje = "El telefono  debe contener 10 digitos ";
+                    }
+
                 }
             }
             catch (Exception e)
@@ -142,40 +175,45 @@ namespace restaurantesiberian.Controllers
             {
                 using (SiberianDBContext _context = new())
                 {
-
                     var parameters = new[] {
-                                               new SqlParameter("@tipofuncion", SqlDbType.Int)
-                                            {
-                                              Direction = ParameterDirection.Input,
-                                              Value = 4
-                                            },
-                                                  new SqlParameter("@idrestaurante",   SqlDbType.Int)
-                                            {
-                                              Direction = ParameterDirection.Input,
-                                              Value = values.Idrestaurante
-                                            },
-                                               new SqlParameter("@idciudad",   SqlDbType.Int)
-                                            {
-                                              Direction = ParameterDirection.Input,
-                                              Value = values.Idciudad
-                                            },
+                                              new SqlParameter("@tipofuncion", SqlDbType.Int)
+                                              {
+                                                  Direction = ParameterDirection.Input,
+                                                  Value = 4
+                                              },
+                                              new SqlParameter("@ciudad", SqlDbType.VarChar)
+                                              {
+                                                  Direction = ParameterDirection.Input,
+                                                  Value = ""
+                                              },
+                                               new SqlParameter("@idciudad", SqlDbType.Int)
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = values.Idciudad
+                                               },  
+                                               new SqlParameter("@idrestaurante", SqlDbType.Int)
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = values.Idrestaurante
+                                               },
                                                new SqlParameter("@nombrerestaurante", SqlDbType.VarChar)
-                                            {
-                                              Direction = ParameterDirection.Input,
-                                              Value = values.NombreRestaurante
-                                            },
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = values.NombreRestaurante
+                                               },
                                                new SqlParameter("@numeroAforo", SqlDbType.Int)
-                                            {
-                                              Direction = ParameterDirection.Input,
-                                              Value = values.NumeroAforo
-                                            },   
-                                               new SqlParameter("@telefono", SqlDbType.VarChar)
-                                            {
-                                              Direction = ParameterDirection.Input,
-                                              Value = values.Telefono
-                                            }
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = values.NumeroAforo
+                                               },
+                                                 new SqlParameter("@telefono", SqlDbType.VarChar)
+                                                 {
+                                                     Direction = ParameterDirection.Input,
+                                                     Value = values.Telefono
+                                                 }
                                             };
-                    await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes @tipofuncion,@idciudad, @idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
+
+                await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad, @idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
                     respuesta.Status = 1;
                 }
             }
@@ -199,10 +237,46 @@ namespace restaurantesiberian.Controllers
                 using (SiberianDBContext _context = new SiberianDBContext())
                 {
 
-                    string StoredProc = "exec Sp_Restaurantes" +
-                     "@tipofuncion =" + 5 + "," +
-                     "@iderestaurante = " + id + "";
-                    await _context.Database.ExecuteSqlRawAsync(StoredProc);
+                    var parameters = new[] {
+                                              new SqlParameter("@tipofuncion", SqlDbType.Int)
+                                              {
+                                                  Direction = ParameterDirection.Input,
+                                                  Value = 5
+                                              },
+                                              new SqlParameter("@ciudad", SqlDbType.VarChar)
+                                              {
+                                                  Direction = ParameterDirection.Input,
+                                                  Value = ""
+                                              },
+                                               new SqlParameter("@idciudad", SqlDbType.Int)
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = 1
+                                               },
+                                               new SqlParameter("@idrestaurante", SqlDbType.Int)
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = id
+                                               },
+                                               new SqlParameter("@nombrerestaurante", SqlDbType.VarChar)
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = ""
+                                               },
+                                               new SqlParameter("@numeroAforo", SqlDbType.Int)
+                                               {
+                                                   Direction = ParameterDirection.Input,
+                                                   Value = 1
+                                               },
+                                                 new SqlParameter("@telefono", SqlDbType.VarChar)
+                                                 {
+                                                     Direction = ParameterDirection.Input,
+                                                     Value = ""
+                                                 }
+                                            };
+
+                    await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad, @idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
+
                     respuesta.Status = 1;
                     //respuesta.DatosJson = restauranteModels;
                 }

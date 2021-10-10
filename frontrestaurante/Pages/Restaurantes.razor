@@ -4,11 +4,56 @@
 @inject HttpClient Http
 <h3>@Title</h3>
 
+@if (respuesta.DatosJson == null || respuesta == null)
+{
+    <p><em>Cargando Información...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IDRESTAURANTE</th>
+                <th>NOMBRE RESTAURANTE</th>
+                <th>AFORO PERMITIDO</th>
+                <th>TELEFONO</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in respuesta.DatosJson)
+            {
+            <tr>
+                <td>@item.Idrestaurante.ToString()</td>
+                <td>@item.NombreRestaurante</td>
+                <td>@item.NumeroAforo.ToString()</td>
+                <td>@item.Telefono</td>
+                <td><button>Editar</button></td>
+                <td><button>Eliminar</button></td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    //public string url = "/api/GrabaRestaurante";
-    //public Data.RespuestaModels respuesta = new Data.RespuestaModels();
-    //protected override async Task OnInitializedAsync() => respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url);
+    public string url = "/api/ListaRestaurantexnom/GUA";
+    public Data.RespuestaModels respuesta = new Data.RespuestaModels();
 
     [Parameter]
     public string Title { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url);
+    }
+
+
+    //public Data.RespuestaModels respuesta = new Data.RespuestaModels();
+    //protected override async Task OnInitializedAsync() => respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url);
+
 }

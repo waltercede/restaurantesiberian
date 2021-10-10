@@ -14,6 +14,7 @@ namespace restaurantesiberian.Models
         public int? Idciudad { get; set; }
         public int? NumeroAforo { get; set; }
         public string Telefono { get; set; }
+
         public DateTime? FechaCreacion { get; set; }
 
         public virtual Ciudad IdciudadNavigation { get; set; }

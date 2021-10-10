@@ -45,7 +45,7 @@ namespace restaurantesiberian.Controllers
 
         [HttpPost]
         [Route("api/ActualizaCiudad")]
-        public  IActionResult ActualizaCiudad(InputCiudad ciudad)
+        public async Task<IActionResult> ActualizaCiudad(InputCiudad ciudad)
         {
 
             RespuestaModels respuesta = new();
@@ -55,7 +55,7 @@ namespace restaurantesiberian.Controllers
                // ciudadModels.Idciudad = ciudad.Idciudad;
                 ciudadModels.NombreCiudad = ciudad.NombreCiudad;
                 _context.Entry(ciudadModels).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
+                await _context.SaveChangesAsync();
                 respuesta.Status = 1;
 
             }
