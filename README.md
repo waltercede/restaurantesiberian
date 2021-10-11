@@ -1,6 +1,6 @@
 # restaurantesiberian
 PRUEBA TECNICA SIBERIA
-* 1.-EN EL ARCHIVO appsettigns.json ubicado en la parte del backend agregar la ruta de conexion del archivo sqlserver
+* 1.-EN EL ARCHIVO appsettigns.json ubicado en la parte del backend (restaurantesiberian) agregar la ruta de conexion del archivo sqlserver
 * 2.-Restaurar el archivo.bak de la base de datos en la carpeta Data del backend o en su casa correo el script dela rchivo scrip.sql
 * 3-se realizo el menu de las ciudades para eso agregar ciudades en los endpoint respectivos
 * 4.-se dee ingresar ciudades para que vayan apareciendo en forma de menus
@@ -21,3 +21,4 @@ PRUEBA TECNICA SIBERIA
 * ​/api​/ActualizarRestaurante
 * DELETE
 * ​/{id}
+* 5.- para obtener el token bearn utilizar el endpoint api/authenticate
