@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Expiry.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,13 @@ namespace restaurantesiberian.Controllers
     public class CiudadsController : ControllerBase
     {
         private readonly SiberianDBContext _context;
+        private readonly IJwtAuthenticationService _authService;
 
-        public CiudadsController(SiberianDBContext context)
+       
+        public CiudadsController(SiberianDBContext context, IJwtAuthenticationService authService)
         {
             _context = context;
+            _authService = authService;
         }
         [HttpPost]
         [Route("api/GrabaCiudad")]
@@ -93,5 +97,17 @@ namespace restaurantesiberian.Controllers
             return Ok(respuesta);
         }
 
+        [HttpGet("api/authenticate")]
+        public IActionResult Authenticate()
+        {
+            var token = _authService.Authenticate("Siberian", "12345");
+
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(token);
+        }
     }
 }

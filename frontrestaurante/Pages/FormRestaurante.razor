@@ -42,6 +42,7 @@
 
 
 </EditForm>
+
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -50,19 +51,28 @@
     [Parameter]
     public string nomciudad { get; set; }
 
-
+    List<RestauranteModels> restaurantedecodificado = new List<RestauranteModels>();
     RestauranteModels restaurante = new RestauranteModels();
     RespuestaSimpleModels respuesta = new RespuestaSimpleModels();
     public string url = "/api/GrabaRestaurante";
-    public string url2 = "/api/MotrarRestaurantexid/1";
+    public string url2 = "/api/MotrarRestaurantexid/";
+    public string url3 = "/api/ActualizarRestaurante";
     RespuestaModels respuestaConsulta = new RespuestaModels();
 
     private async Task Guardar()
     {
         restaurante.Idciudad = Idciudad;
 
-        var respuestaPeticion = await Http.PostAsJsonAsync(url, restaurante);
-        respuesta = respuestaPeticion.Content.ReadFromJsonAsync<RespuestaSimpleModels>().Result;
+        if (Id != 0)
+        {
+            var respuestaPeticion = await Http.PostAsJsonAsync(url3, restaurante);
+            respuesta = respuestaPeticion.Content.ReadFromJsonAsync<RespuestaSimpleModels>().Result;
+        }
+        else
+        {
+            var respuestaPeticion = await Http.PostAsJsonAsync(url, restaurante);
+            respuesta = respuestaPeticion.Content.ReadFromJsonAsync<RespuestaSimpleModels>().Result;
+        }
         if (respuesta.Status == 1)
         {
             rutaNavegacion.NavigateTo($"restaurantes/{Idciudad}/{nomciudad}");
@@ -76,7 +86,9 @@
     {
         if (Id != 0)
         {
-            respuestaConsulta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url2);
+            var respuestaConsulta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url2 + Id.ToString());
+            restaurantedecodificado = respuestaConsulta.DatosJson;
+            restaurante = restaurantedecodificado[0];
 
         }
     }

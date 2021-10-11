@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using restaurantesiberian.Models;
@@ -13,10 +14,19 @@ using System.Threading.Tasks;
 namespace restaurantesiberian.Controllers
 {
    // [Route("api/[controller]")]
+
     [ApiController]
     public class RestauranteController : ControllerBase
     {
+        private readonly SiberianDBContext _context;
+        
+
+        public RestauranteController(SiberianDBContext context)
+        {
+            _context = context;
+        }
         // GET: api/<RestauranteController>
+       // [Authorize]
         [HttpGet]
         [Route("api/ListaRestaurantexnom/{nombreCiudad}")]
         public async Task<IActionResult> ListaRestaurantexnom( string nombreCiudad)
@@ -25,8 +35,8 @@ namespace restaurantesiberian.Controllers
             Console.WriteLine(nombreCiudad);
             try
             {
-                using (SiberianDBContext _context = new SiberianDBContext())
-                {
+                //using (SiberianDBContext _context = new SiberianDBContext())
+                //{
                     List<Restaurante> restauranteModels = new();
                     string StoredProc = "exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurant,@numeroAforo,@telefono";
  
@@ -46,7 +56,7 @@ namespace restaurantesiberian.Controllers
                     respuesta.Status = 1;
                     respuesta.DatosJson = restauranteModels;
                 }
-            }
+            //}
             catch(Exception e)
             {
                 respuesta.Status = 0;
@@ -55,7 +65,8 @@ namespace restaurantesiberian.Controllers
             }
             return Ok(respuesta);
         }
-
+        
+        //[Authorize]
         [HttpGet]
         [Route("api/MotrarRestaurantexid/{id}")]
         public async Task<IActionResult> MotrarRestaurantexid(int id)
@@ -64,8 +75,8 @@ namespace restaurantesiberian.Controllers
             Console.WriteLine(id);
             try
             {
-                using (SiberianDBContext _context = new SiberianDBContext())
-                {
+                //using (SiberianDBContext _context = new SiberianDBContext())
+                //{
                     List<Restaurante> restauranteModels = new();
                     string StoredProc = "exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurant,@numeroAforo,@telefono";
 
@@ -74,8 +85,8 @@ namespace restaurantesiberian.Controllers
 
                 new SqlParameter { ParameterName = "@tipofuncion", Value = 2 },
                 new SqlParameter { ParameterName = "@ciudad", Value = "" },
-                new SqlParameter { ParameterName = "@idciudad", Value = id },
-                new SqlParameter { ParameterName = "@idrestaurante", Value = 1 },
+                new SqlParameter { ParameterName = "@idciudad", Value = 1 },
+                new SqlParameter { ParameterName = "@idrestaurante", Value = id },
                 new SqlParameter { ParameterName = "@nombrerestaurant", Value = "" },
                 new SqlParameter { ParameterName = "@numeroAforo", Value = 1 },
                 new SqlParameter { ParameterName = "@telefono", Value = "" },
@@ -85,7 +96,7 @@ namespace restaurantesiberian.Controllers
                     respuesta.Status = 1;
                     respuesta.DatosJson = restauranteModels;
                 }
-            }
+           // }
             catch (Exception e)
             {
                 respuesta.Status = 0;
@@ -96,6 +107,7 @@ namespace restaurantesiberian.Controllers
         }
 
         // POST api/<RestauranteController>4664
+       // [Authorize]
         [HttpPost]
         [Route("api/GrabaRestaurante")]
         public async Task<IActionResult> GrabaRestaurante(InputRestaurante  values)
@@ -103,8 +115,8 @@ namespace restaurantesiberian.Controllers
             RespuestaModels respuesta = new();
             try
             {
-                using (SiberianDBContext _context = new())
-                {
+                //using (SiberianDBContext _context = new())
+                //{
 
 
                     var parameters = new[] {
@@ -158,7 +170,7 @@ namespace restaurantesiberian.Controllers
                     }
 
                 }
-            }
+           // }
             catch (Exception e)
             {
                 respuesta.Status = 0;
@@ -167,7 +179,7 @@ namespace restaurantesiberian.Controllers
             }
             return Ok(respuesta);
         }
-
+      //  [Authorize]
         [HttpPost]
         [Route("api/ActualizarRestaurante")]
         public async Task<IActionResult> ActualizarRestaurante(InputRestaurante values)
@@ -175,8 +187,8 @@ namespace restaurantesiberian.Controllers
             RespuestaModels respuesta = new();
             try
             {
-                using (SiberianDBContext _context = new())
-                {
+                //using (SiberianDBContext _context = new())
+                //{
                     var parameters = new[] {
                                               new SqlParameter("@tipofuncion", SqlDbType.Int)
                                               {
@@ -217,8 +229,9 @@ namespace restaurantesiberian.Controllers
 
                 await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad, @idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
                     respuesta.Status = 1;
+                respuesta.Mensaje = "Actualizado con exito";
                 }
-            }
+            //}
             catch (Exception e)
             {
                 respuesta.Status = 0;
@@ -229,15 +242,17 @@ namespace restaurantesiberian.Controllers
         }
 
         // DELETE api/<RestauranteController>/5
-        [HttpDelete("{id}")]
+       // [Authorize]
+        [HttpDelete]
+        [Route("api/eliminaRestaurante/{id}")]
         public async Task<IActionResult> EliminaRestaurante(int id)
         {
 
             RespuestaModels respuesta = new();
             try
             {
-                using (SiberianDBContext _context = new SiberianDBContext())
-                {
+                //using (SiberianDBContext _context = new SiberianDBContext())
+                //{
 
                     var parameters = new[] {
                                               new SqlParameter("@tipofuncion", SqlDbType.Int)
@@ -280,9 +295,10 @@ namespace restaurantesiberian.Controllers
                     await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes @tipofuncion,@ciudad,@idciudad, @idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
 
                     respuesta.Status = 1;
+                respuesta.Mensaje = "Eliminado con exito";
                     //respuesta.DatosJson = restauranteModels;
                 }
-            }
+           // }
             catch (Exception e)
             {
                 respuesta.Status = 0;
