@@ -1,0 +1,87 @@
+﻿@page "/addrestaurante/{Idciudad:int}/{nomciudad}"
+@page "/editrestaurante/{Id:int}/{Idciudad:int}/{nomciudad}"
+
+@using Data
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager rutaNavegacion
+@inject IJSRuntime llamarjs
+<h3> Formulario de Registro</h3>
+<EditForm Model="@restaurante" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="container-fluid">
+        <div class="form-group row mb-1">
+            <label class="col-sm-3">Nombre Restaurante</label>
+            <div class="col-md-9">
+                <InputText class="form-control" @bind-Value="@restaurante.NombreRestaurante"></InputText>
+                <ValidationMessage For="@(() => restaurante.NombreRestaurante)" />
+            </div>
+        </div>
+        <div class="form-group row mb-1">
+            <label class="col-sm-3">Telefono</label>
+            <div class="col-md-9">
+                <InputText class="form-control" @bind-Value="@restaurante.Telefono"></InputText>
+                <ValidationMessage For="@(() => restaurante.Telefono)" />
+            </div>
+        </div>
+        <div class="form-group row mb-1">
+            <label class="col-sm-3">Aforo permitido</label>
+            <div class="col-md-9">
+                <InputNumber class="form-control" @bind-Value="@restaurante.NumeroAforo"></InputNumber>
+                <ValidationMessage For="@(() => restaurante.NumeroAforo)" />
+            </div>
+        </div>
+        <div class="form-group row mb-1">
+            <div class="col-md-9">
+                <button class="btn btn-primary" @onclick="Guardar">AGREGAR RESTAURANTE</button>
+            </div>
+        </div>
+
+    </div>
+
+
+</EditForm>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public int Idciudad { get; set; }
+    [Parameter]
+    public string nomciudad { get; set; }
+
+
+    RestauranteModels restaurante = new RestauranteModels();
+    RespuestaSimpleModels respuesta = new RespuestaSimpleModels();
+    public string url = "/api/GrabaRestaurante";
+    public string url2 = "/api/MotrarRestaurantexid/1";
+    RespuestaModels respuestaConsulta = new RespuestaModels();
+
+    private async Task Guardar()
+    {
+        restaurante.Idciudad = Idciudad;
+
+        var respuestaPeticion = await Http.PostAsJsonAsync(url, restaurante);
+        respuesta = respuestaPeticion.Content.ReadFromJsonAsync<RespuestaSimpleModels>().Result;
+        if (respuesta.Status == 1)
+        {
+            rutaNavegacion.NavigateTo($"restaurantes/{Idciudad}/{nomciudad}");
+        }
+        else
+        {
+            await llamarjs.InvokeAsync<object>("MostrarAlerta", respuesta.Mensaje);
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id != 0)
+        {
+            respuestaConsulta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url2);
+
+        }
+    }
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+}

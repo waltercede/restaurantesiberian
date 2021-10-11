@@ -22,7 +22,7 @@ namespace restaurantesiberian.Controllers
         public async Task<IActionResult> ListaRestaurantexnom( string nombreCiudad)
         {
             RespuestaModels respuesta = new();
-           
+            Console.WriteLine(nombreCiudad);
             try
             {
                 using (SiberianDBContext _context = new SiberianDBContext())
@@ -61,6 +61,7 @@ namespace restaurantesiberian.Controllers
         public async Task<IActionResult> MotrarRestaurantexid(int id)
         {
             RespuestaModels respuesta = new();
+            Console.WriteLine(id);
             try
             {
                 using (SiberianDBContext _context = new SiberianDBContext())
@@ -148,6 +149,7 @@ namespace restaurantesiberian.Controllers
                     {
                         await _context.Database.ExecuteSqlRawAsync("exec Sp_Restaurantes  @tipofuncion,@ciudad,@idciudad,@idrestaurante,@nombrerestaurante,@numeroAforo,@telefono", parameters: parameters);
                         respuesta.Status = 1;
+                        respuesta.Mensaje = "Restaurante Guardado";
                     }
                     else
                     {

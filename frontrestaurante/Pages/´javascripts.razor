@@ -1,0 +1,37 @@
+﻿@page "/funjavascript"
+@inject IJSRuntime llamarjs
+@using frontrestaurante.Data
+<h4>ARRAY EN JAVASCRIPT</h4>
+@if (resultado == null || resultado == null)
+{
+    <p><em>Cargando Información...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>FRAMEWORK</th>
+                <th>LENGUAJE DE PROGRAMACIÓN</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in resultado)
+            {
+                <tr>
+                    <td>@item.Framework</td>
+                    <td>@item.Lenguaje</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    List<WeatherForecast> resultado = new List<WeatherForecast>();
+    protected override async Task OnInitializedAsync() => resultado = await llamarjs.InvokeAsync<List<WeatherForecast>>("MostrarArray");
+
+
+}

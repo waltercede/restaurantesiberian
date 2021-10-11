@@ -1,59 +1,93 @@
-﻿@page "/restaurantes/{Title}"
+﻿@page "/restaurantes/{Idciudad:int}/{Title}"
 @using System.Net.Http
 @using System.Net.Http.Json
 @inject HttpClient Http
 <h3>@Title</h3>
 
-@if (respuesta.DatosJson == null || respuesta == null)
-{
-    <p><em>Cargando Información...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>IDRESTAURANTE</th>
-                <th>NOMBRE RESTAURANTE</th>
-                <th>AFORO PERMITIDO</th>
-                <th>TELEFONO</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in respuesta.DatosJson)
-            {
-            <tr>
-                <td>@item.Idrestaurante.ToString()</td>
-                <td>@item.NombreRestaurante</td>
-                <td>@item.NumeroAforo.ToString()</td>
-                <td>@item.Telefono</td>
-                <td><button>Editar</button></td>
-                <td><button>Eliminar</button></td>
 
-            </tr>
+<table class="table">
+    <thead>
+        <tr>
+            <th>IDRESTAURANTE</th>
+            <th>NOMBRE RESTAURANTE</th>
+            <th>AFORO PERMITIDO</th>
+            <th>TELEFONO</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (respuesta.DatosJson == null || respuesta == null)
+        {
+            <tr>
+                <td><em>Cargando Información...</em></td></tr>
+                }
+
+                else
+                {
+                @foreach (var item in respuesta.DatosJson)
+                {
+                <tr>
+                    <td>@item.Idrestaurante.ToString()</td>
+                    <td>@item.NombreRestaurante</td>
+                    <td>@item.NumeroAforo.ToString()</td>
+                    <td>@item.Telefono</td>
+                    <td><a class="btn btn-primary btn-lg active" role="button" href=@($"/editrestaurante/{item.Idrestaurante}/{Idciudad}/{Title}")> Editar</a></td>
+                    <td><a class="btn btn-danger btn-lg active" role="button">Eliminar</a> </td>
+
+                </tr>
             }
-        </tbody>
-    </table>
-}
+                }
+            </tbody>
+    
+</table>
+
+<div class="row">
+    <div class="col-12 text-center">
+       <a class="btn btn-success btn-lg active" role="button"  href=@($"/addrestaurante/{Idciudad}/{Title}")>AGREGAR RESTAURANTE</a>
+
+    </div>
+</div>
 
 @code {
-    public string url = "/api/ListaRestaurantexnom/GUA";
+    public string url = "/api/ListaRestaurantexnom/";
     public Data.RespuestaModels respuesta = new Data.RespuestaModels();
+    public string Pila { get; set; }
 
     [Parameter]
     public string Title { get; set; }
 
+    [Parameter]
+    public int  Idciudad { get; set; }
 
+    protected override async Task OnInitializedAsync() {
 
-    protected override async Task OnInitializedAsync()
-    {
+        if (Pila != Title)
+        {
+            Pila = Title;
+            respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url + Title);
+        }
+        StateHasChanged();
 
-
-        respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url);
     }
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Pila != Title)
+        {
+            Pila = Title;
+            respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url + Title);
+        }
+        StateHasChanged();
 
-
-    //public Data.RespuestaModels respuesta = new Data.RespuestaModels();
-    //protected override async Task OnInitializedAsync() => respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url);
+    }
+    //StateHasChanged();
+    //void StartCountdown()
+    //{
+    //    if (Pila != Title)
+    //    {
+    //        Pila = Title;
+    //        respuesta = await Http.GetFromJsonAsync<Data.RespuestaModels>(url + Title);
+    //    }
+    //}
+}
 
 }

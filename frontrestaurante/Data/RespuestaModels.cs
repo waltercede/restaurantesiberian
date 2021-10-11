@@ -18,4 +18,10 @@ namespace frontrestaurante.Data
         public string Mensaje { get; set; }
         public List<CiudadModels> DatosJson { get; set; }
     }
-}
+
+    public class RespuestaSimpleModels
+    {
+        public int Status { get; set; }
+        public string Mensaje { get; set; }
+    }
+    }

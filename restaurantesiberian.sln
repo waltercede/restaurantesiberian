@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "restaurantesiberian", "restaurantesiberian\restaurantesiberian.csproj", "{DEC6BEF4-F7AF-432C-965F-20A6602C0784}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frontrestaurante", "frontrestaurante\frontrestaurante.csproj", "{A735C511-441B-4C7D-9151-B576C31CEB38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frontrestaurante", "frontrestaurante\frontrestaurante.csproj", "{A735C511-441B-4C7D-9151-B576C31CEB38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
