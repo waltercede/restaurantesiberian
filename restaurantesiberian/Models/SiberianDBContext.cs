@@ -24,8 +24,8 @@ namespace restaurantesiberian.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-              //  optionsBuilder.UseSqlServer("Server=190.154.147.130;Database=SiberianDB;User=GEOSHOP;Password=GEOSHOP20;");
-                optionsBuilder.UseSqlServer("Server=190.154.147.130;Database=SiberianDB;User=BIROBID;Password=IROBID20;");
+             
+                optionsBuilder.UseSqlServer("Server=miip;Database=SiberianDB;User=;Password=;");
             }
         }
 
